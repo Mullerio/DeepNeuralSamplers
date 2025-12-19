@@ -1,6 +1,6 @@
 # DeepNeuralSamplers
 
-This is a implementation of [https://arxiv.org/abs/2410.03282](https://arxiv.org/abs/2410.03282) by Chemseddine et. al. and [https://arxiv.org/abs/2410.03282](https://arxiv.org/abs/2301.07388) by Máté et al. to learn samplers from unnormalized densities. We implement gradient flow, learned and linear interpolations and provide examples on more target distributions.
+This is an implementation of [https://arxiv.org/abs/2410.03282](https://arxiv.org/abs/2410.03282) by Chemseddine et. al. and [https://arxiv.org/abs/2410.03282](https://arxiv.org/abs/2301.07388) by Máté et al. to learn samplers from unnormalized densities. We implement gradient flow, learned and linear interpolations and provide examples on more target distributions.
 
 <table>
   <tr>
