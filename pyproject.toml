@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=45", "wheel", "setuptools_scm[toml]>=6.2"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "DeepNeuralSamplers"
+version = "0.1.0"
+description = "Neural sampling experiments comparing GF, Learned, and Linear methods"
+readme = "README.md"
+requires-python = ">=3.8"
+authors = [
+    {name = "Jonas", email = "jonas@example.com"}
+]
+
+dependencies = [
+    "torch>=1.9.0",
+    "numpy>=1.19.0",
+    "scipy>=1.5.0",
+    "matplotlib>=3.3.0",
+    "torchdiffeq>=0.2.0",
+    "geomloss>=0.2.2",
+    "wandb>=0.12.0",
+    "tqdm>=4.67.1",
+    "pandas>=2.0.3",
+]
+
+[project.urls]
+Homepage = "https://github.com/Mullerio/NeuralSamplingExperiments"
