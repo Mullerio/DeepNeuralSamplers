@@ -2,14 +2,24 @@
 
 This is an implementation of [https://arxiv.org/abs/2410.03282](https://arxiv.org/abs/2410.03282) by Chemseddine et. al. and [https://arxiv.org/abs/2410.03282](https://arxiv.org/abs/2301.07388) by Máté et al. to learn samplers from unnormalized densities. We implement gradient flow, learned and linear interpolations and provide examples on more target distributions.
 
-<table>
-  <tr>
-    <td align="center"><b>Rings - GF</b><br><img src="images/gf_interpolation_reverse.gif" width="280" alt="Rings GF"></td>
-    <td align="center"><b>Rings - Learned</b><br><img src="images/learned_interpolation.gif" width="280" alt="Rings Learned"></td>
-    <td align="center"><b>AsymGMM - GF</b><br><img src="images/gf_interpolation_reverse_gmm.gif" width="280" alt="AsymGMM GF"></td>
-    <td align="center"><b>AsymGMM - Learned</b><br><img src="images/learned_interpolation_gmm.gif" width="280" alt="AsymGMM Learned"></td>
-  </tr>
-</table>
+<div align="center">
+  <table>
+    <tr>
+      <td align="center"><b>Rings - GF</b><br>
+        <img src="images/gf_interpolation_reverse.gif" width="220" alt="Rings GF">
+      </td>
+      <td align="center"><b>Rings - Learned</b><br>
+        <img src="images/learned_interpolation.gif" width="220" alt="Rings Learned">
+      </td>
+      <td align="center"><b>AsymGMM - GF</b><br>
+        <img src="images/gf_interpolation_reverse_gmm.gif" width="220" alt="AsymGMM GF">
+      </td>
+      <td align="center"><b>AsymGMM - Learned</b><br>
+        <img src="images/learned_interpolation_gmm.gif" width="220" alt="AsymGMM Learned">
+      </td>
+    </tr>
+  </table>
+</div>
 
 ---
 
