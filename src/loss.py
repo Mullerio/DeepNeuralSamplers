@@ -8,77 +8,9 @@ import numpy as np
 from scipy.special import gamma
 from torch.special import gammaln
 
-class GeneralizedGaussianGamma:
-    """Generalized Gaussian (Generalized Normal) distribution with parameter p.
-    Uses proper Gamma normalization.
-    
-    PDF: (p / (2 * sigma * Gamma(1/p))) * exp(-(|x| / (sigma * (Gamma(1/p) / Gamma(3/p))^(1/2)))^p)
-    
-    Special cases:
-    - p=2: Standard Gaussian
-    - p=1: Laplace distribution
-    - p->0: Uniform distribution
-    - p->inf: Point mass
-    """
-    
-    def __init__(self, sigma, p, dim):
-        self.sigma = sigma
-        self.p = p
-        self.dim = dim
-        
-        # Compute normalization constant
-        # For d-dimensional generalized Gaussian:
-        # log_norm = d * [log(p) - log(sigma) - log(2*Gamma(1/p))]
-        self.log_norm = dim * (np.log(p) - np.log(sigma) - np.log(2) - np.log(gamma(1/p)))
-    
-    def log_prob(self, x):
-        """Compute log probability.
-        
-        Args:
-            x: tensor of shape [batch_size, dim]
-        
-        Returns:
-            log_prob: tensor of shape [batch_size]
-        """
-        # Scale factor for the distribution
-        # lambda = sigma * (Gamma(1/p) / Gamma(3/p))^(1/2)
-        lambda_scale = self.sigma * np.sqrt(gamma(1/self.p) / gamma(3/self.p))
-        
-        # Compute ||x / lambda||^p
-        norm_x = torch.norm(x / lambda_scale, p=self.p, dim=1)
-        
-        # log_prob = log_norm - (||x||/lambda)^p
-        log_prob = self.log_norm - norm_x**self.p
-        
-        return log_prob
-    
-    def sample(self, batch_size, device='cpu'):
-        """Sample from generalized Gaussian using the exponential-Gamma mixture.
-        
-        x = z * u where:
-        - z ~ Gamma(d/p, 1) where d is dimension
-        - u ~ uniform on d-sphere
-        """
-        # Sample from Gamma(d/p, 1)
-        shape_param = self.dim / self.p
-        z = torch.tensor(np.random.gamma(shape_param, 1, batch_size), dtype=torch.float32, device=device)
-        
-        # Sample uniform direction (d-sphere)
-        u = torch.randn(batch_size, self.dim, device=device)
-        u = u / torch.norm(u, dim=1, keepdim=True)
-        
-        # Scale by lambda
-        lambda_scale = self.sigma * np.sqrt(gamma(1/self.p) / gamma(3/self.p))
-        
-        # Combine: scale z^(1/p) by lambda and direction
-        samples = lambda_scale * (z.unsqueeze(1)**(1/self.p)) * u
-        
-        return samples
-
-
 class GeneralizedGaussian:
     """
-    Generalized Gaussian with an exact Gaussian special case at p=2.
+    For p = 2 exact gaussian, not sure if p != 2 case is as in Mate et al.
     """
 
     def __init__(self, sigma, p, dim, device='cpu'):
@@ -87,7 +19,6 @@ class GeneralizedGaussian:
         self.dim = int(dim)
         self.device = device
 
-        # Pre-build Gaussian distribution for p=2 case
         if self.p == 2:
             cov = (self.sigma ** 2) * torch.eye(self.dim, device=device)
             self.gaussian = torch.distributions.MultivariateNormal(
@@ -96,15 +27,12 @@ class GeneralizedGaussian:
             )
             
     def log_prob(self, x):
-        # Fast exact Gaussian logprob
         if self.p == 2:
             return self.gaussian.log_prob(x)
 
-        # General p > 0 case
         r = torch.norm(x, p=self.p, dim=-1)
         d = self.dim
 
-        # log V_{d,p}
         log_V_dp = (
             d * (torch.log(torch.tensor(2.0, device=self.device)) + gammaln(torch.tensor(1 + 1 / self.p, device=self.device)))
             - gammaln(torch.tensor(1 + d / self.p, device=self.device))
@@ -120,17 +48,13 @@ class GeneralizedGaussian:
 
         return -((r / self.sigma) ** self.p) - logZ
 
-    # ---------------------------------------------------------
-    # SAMPLING
-    # ---------------------------------------------------------
+
     def sample(self, batch_size, device='cpu'):
-        # Fast exact Gaussian sample
         if self.p == 2:
             return self.gaussian.sample((batch_size,)).to(device)
 
-        # General p-sampler (Gamma radius + random sphere direction)
         shape_param = self.dim / self.p
-        scale_param = 2.0  # ensures p=2 matches χ²(d)
+        scale_param = 2.0  
 
         z = torch.tensor(
             np.random.gamma(shape_param, scale_param, batch_size),
@@ -178,7 +102,6 @@ class TorchWrapperGF(nn.Module):
     
 class TorchWrapper(nn.Module):
     """Wraps velocity model for ODE integration.
-    Handles both scalar time (from odeint) and [batch, 1] shaped time tensors.
     """
     def __init__(self, model):
         super().__init__()

@@ -162,7 +162,6 @@ def run_heavy_evaluation(
                 
                 # Compute log probabilities
                 log_p = target.log_prob(x_gen).detach()
-                #log q without normalizing constant -> we use change of variables
                 log_q = (-0.5 * torch.sum(start**2, dim=1) / (args.sigma**2)).detach()
                 
                 # Compute NLL for this batch
@@ -196,7 +195,7 @@ def run_heavy_evaluation(
                 log_p_list.append(log_p.cpu())
                 log_q_list.append(log_q.cpu())
                 
-                # Store full trajectories for final evaluation (up to 1000 samples)
+                # Store full trajectories for final plotting (only up to 1000 for visual clarity)
                 if step is None and len(full_trajectories) < 1000:
                     # traj shape: (num_timesteps, batch_size, dim)
                     traj_cpu = traj.detach().cpu().numpy()
@@ -246,7 +245,7 @@ def run_heavy_evaluation(
         ess = float('nan')
         ess_std = float('nan')
     
-    # 3. Plotting - limit samples if final_eval_plotting is set and smaller than actual samples
+    # 3. Plotting 
     x_gen_plot = x_gen
     eps_kept_plot = eps_kept
     
@@ -301,9 +300,7 @@ def run_heavy_evaluation(
     # Log to Writer (WandB only)
     if writer:
         prefix = "BigEval" if big_eval else "Eval"
-        # Handle WandB (if writer is wandb module or similar)
         if hasattr(writer, 'log'):
-             # wandb usually takes a dict
              log_dict = {f"{prefix}/{key}": val for key, val in all_metrics.items()}
              if step is not None:
                  log_dict['step'] = step
@@ -974,12 +971,10 @@ def get_eval_callbacks(target_name):
     
     elif target_name == "Rings":
         def rings_plotting(x_gen, eps_kept, step, save_dir, big_eval, target, models=None, model_type=None, args=None, device=None, full_trajectories=None, trajectory_t_span=None):
-            # Extract 2D samples for plotting
-            x_gen_2d = x_gen[:, :2].cpu()
             
             # Cap both at same number for fair comparison
-            num_plot_samples = min(5000, x_gen_2d.shape[0])
-            x_gen_plot = x_gen_2d[:num_plot_samples]
+            num_plot_samples = min(5000, x_gen.shape[0])
+            x_gen_plot = x_gen[:num_plot_samples]
             
             # Draw true samples for comparison
             try:
@@ -1009,7 +1004,7 @@ def get_eval_callbacks(target_name):
             
             # Plot generated samples
             fig, ax = plt.subplots(1, 1, figsize=(8, 8))
-            ax.scatter(x_gen_2d[:, 0], x_gen_2d[:, 1], alpha=0.3, s=1, label='Generated')
+            ax.scatter(x_gen_plot[:, 0], x_gen_plot[:, 1], alpha=0.3, s=1, label='Generated')
             ax.set_xlim(bounds)
             ax.set_ylim(bounds)
             ax.set_xlabel('$x_1$')
