@@ -6,16 +6,16 @@ This is an implementation of [https://arxiv.org/abs/2410.03282](https://arxiv.or
   <table>
     <tr>
       <td align="center"><b>Rings - GF</b><br>
-        <img src="images/gf_interpolation_reverse.gif" width="220" alt="Rings GF">
+        <img src="images/gf_interpolation_reverse.gif" width="175" alt="Rings GF">
       </td>
       <td align="center"><b>Rings - Learned</b><br>
-        <img src="images/learned_interpolation.gif" width="220" alt="Rings Learned">
+        <img src="images/learned_interpolation.gif" width="175" alt="Rings Learned">
       </td>
       <td align="center"><b>AsymGMM - GF</b><br>
-        <img src="images/gf_interpolation_reverse_gmm.gif" width="220" alt="AsymGMM GF">
+        <img src="images/gf_interpolation_reverse_gmm.gif" width="175" alt="AsymGMM GF">
       </td>
       <td align="center"><b>AsymGMM - Learned</b><br>
-        <img src="images/learned_interpolation_gmm.gif" width="220" alt="AsymGMM Learned">
+        <img src="images/learned_interpolation_gmm.gif" width="175" alt="AsymGMM Learned">
       </td>
     </tr>
   </table>
